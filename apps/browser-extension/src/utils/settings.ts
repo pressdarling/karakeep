@@ -66,16 +66,28 @@ export default function usePluginSettings() {
     await STORAGE.set({ settings: newVal });
   };
 
-  return { settings, setSettings, isPending: isInit };
+  return { settings, setSettings, isPending: !isInit };
 }
 
 export async function getPluginSettings() {
-  const parsedSettings = zSettingsSchema.safeParse(
-    (await STORAGE.get("settings")).settings,
-  );
+  const storedSettings = (await STORAGE.get("settings")).settings;
+  const parsedSettings = zSettingsSchema.safeParse(storedSettings);
+
   if (parsedSettings.success) {
     return parsedSettings.data;
   } else {
+    // If settings exist but are missing the autoSave field (for existing users),
+    // merge with defaults to ensure autoSave is set
+    if (storedSettings && typeof storedSettings === "object") {
+      const mergedSettings = { ...DEFAULT_SETTINGS, ...storedSettings };
+      // Try to parse the merged settings
+      const mergedParsed = zSettingsSchema.safeParse(mergedSettings);
+      if (mergedParsed.success) {
+        // Save the merged settings back to storage for future use
+        await STORAGE.set({ settings: mergedSettings });
+        return mergedParsed.data;
+      }
+    }
     return DEFAULT_SETTINGS;
   }
 }
