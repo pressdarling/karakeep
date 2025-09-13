@@ -127,6 +127,19 @@ export default function OptionsPage() {
         <span className="my-auto">Logged in as:</span>
         {loggedInMessage}
       </div>
+      <div className="flex gap-2">
+        <span className="my-auto">Theme:</span>
+        <Select value={theme} onValueChange={setTheme}>
+          <SelectTrigger className="w-24">
+            <SelectValue placeholder="Theme" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="system">System</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <span className="font-medium">Auto-save bookmarks</span>
