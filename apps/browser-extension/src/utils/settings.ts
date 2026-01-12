@@ -8,7 +8,7 @@ const zSettingsSchema = z.object({
   apiKey: z.string(),
   apiKeyId: z.string().optional(),
   address: z.string().optional().default("https://cloud.karakeep.app"),
-  autoSave: z.boolean(),
+  autoSave: z.boolean().optional().default(false),
   closeTabsOnBulkSave: z.boolean().optional(),
   theme: z.enum(["light", "dark", "system"]).optional().default("system"),
   showCountBadge: z.boolean().default(DEFAULT_SHOW_COUNT_BADGE),
@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: Settings = {
   useBadgeCache: true,
   badgeCacheExpireMs: DEFAULT_BADGE_CACHE_EXPIRE_MS,
   customHeaders: {},
-  autoSave: true,
+  autoSave: false,
   closeTabsOnBulkSave: false,
 };
 
