@@ -209,8 +209,8 @@ export default function BulkSavePage() {
       setCurrentWindowTabs(validCurrentWindowTabs);
 
       const auto = searchParams.get("auto");
-      if (auto === "window" && !bulkSaveStatus.isActive) {
-        handleBulkSave("window");
+      if ((auto === "window" || auto === "all") && !bulkSaveStatus.isActive) {
+        handleBulkSave(auto);
         return;
       }
 
