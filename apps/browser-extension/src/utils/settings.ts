@@ -8,7 +8,7 @@ const zSettingsSchema = z.object({
   apiKey: z.string(),
   apiKeyId: z.string().optional(),
   address: z.string().optional().default("https://cloud.karakeep.app"),
-  autosave: z.boolean(),
+  autoSave: z.boolean(),
   closeTabsOnBulkSave: z.boolean().optional(),
   theme: z.enum(["light", "dark", "system"]).optional().default("system"),
   showCountBadge: z.boolean().default(DEFAULT_SHOW_COUNT_BADGE),
@@ -78,17 +78,18 @@ export async function getPluginSettings() {
   const parsedSettings = zSettingsSchema.safeParse(storedSettings);
 
   if (parsedSettings.success) {
-    const enriched: Settings = {
-      closeTabsOnBulkSave: false,
-      ...parsedSettings.data,
-    };
     if (
       typeof (parsedSettings.data as Partial<Settings>).closeTabsOnBulkSave ===
       "undefined"
     ) {
+      const enriched: Settings = {
+        closeTabsOnBulkSave: false,
+        ...parsedSettings.data,
+      };
       await STORAGE.set({ settings: enriched });
+      return enriched;
     }
-    return enriched;
+    return parsedSettings.data;
   } else {
     if (storedSettings && typeof storedSettings === "object") {
       const mergedSettings = { ...DEFAULT_SETTINGS, ...storedSettings };
