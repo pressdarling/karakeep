@@ -1,8 +1,9 @@
 import {
   BookmarkTypes,
   ZNewBookmarkRequest,
-} from "@karakeep/shared/types/bookmarks.ts";
+} from "@karakeep/shared/types/bookmarks";
 
+import { clearBadgeStatus, getBadgeStatus } from "../utils/badgeCache";
 import {
   getPluginSettings,
   Settings,

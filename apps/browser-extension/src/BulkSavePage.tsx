@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -46,7 +46,7 @@ export default function BulkSavePage() {
 
   useEffect(() => {
     setCloseTabs(Boolean(settings.closeTabsOnBulkSave));
-  }, [settings]);
+  }, [settings.closeTabsOnBulkSave]);
 
   const { mutate: createBookmark } = api.bookmarks.createBookmark.useMutation({
     onError: (e) => {
@@ -90,7 +90,8 @@ export default function BulkSavePage() {
               }
             });
           });
-        } catch {
+        } catch (e) {
+          console.warn("Bulk tab removal failed, falling back to individual removal.", e);
           for (const tabId of tabIds) {
             await new Promise<void>((resolve) => {
               chrome.tabs.remove(tabId, () => resolve());
@@ -178,6 +179,8 @@ export default function BulkSavePage() {
     [allTabs, currentWindowTabs, createBookmark, closeTabs],
   );
 
+  const hasAutoTriggered = useRef(false);
+
   useEffect(() => {
     if (isSettingsLoading) {
       return;
@@ -208,8 +211,13 @@ export default function BulkSavePage() {
       );
       setCurrentWindowTabs(validCurrentWindowTabs);
 
+      if (hasAutoTriggered.current) {
+        return;
+      }
+
       const auto = searchParams.get("auto");
       if ((auto === "window" || auto === "all") && !bulkSaveStatus.isActive) {
+        hasAutoTriggered.current = true;
         handleBulkSave(auto);
         return;
       }
@@ -225,12 +233,7 @@ export default function BulkSavePage() {
     }
 
     prepare();
-  }, [
-    isSettingsLoading,
-    handleBulkSave,
-    searchParams,
-    bulkSaveStatus.isActive,
-  ]);
+  }, [isSettingsLoading, searchParams]);
 
   const disableWindowSave = useMemo(
     () => currentWindowTabs.length === 0,
