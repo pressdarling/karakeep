@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -176,7 +176,7 @@ export default function BulkSavePage() {
         }, 700);
       }
     },
-    [allTabs, currentWindowTabs, createBookmark, closeTabs, setError, setBulkSaveStatus],
+    [allTabs, currentWindowTabs, createBookmark, closeTabs],
   );
 
   const hasAutoTriggered = useRef(false);

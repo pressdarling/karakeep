@@ -154,9 +154,9 @@ export default function OptionsPage() {
           }
         />
       </div>
-      </div>
-      <Button onClick={onLogout}>Logout</Button>
-      <Button onClick={onLogout}>Logout</Button>
+       </div>
+       <Button onClick={onLogout}>Logout</Button>
+     </div>
     </div>
   );
 }
