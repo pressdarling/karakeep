@@ -216,9 +216,9 @@ export default function BulkSavePage() {
       }
 
       const auto = searchParams.get("auto");
-      if (auto === "window" && !bulkSaveStatus.isActive) {
+      if ((auto === "window" || auto === "all") && !bulkSaveStatus.isActive) {
         hasAutoTriggered.current = true;
-        handleBulkSave("window");
+        handleBulkSave(auto);
         return;
       }
 
