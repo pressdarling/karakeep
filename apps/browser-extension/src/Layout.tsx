@@ -1,19 +1,26 @@
 import { Home, RefreshCw, Settings, X } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 import { Button } from "./components/ui/button";
 import usePluginSettings from "./utils/settings";
 
 export default function Layout() {
   const navigate = useNavigate();
-  const { settings, isPending: isInit } = usePluginSettings();
-  if (!isInit) {
-    return <div className="p-4">Loading ... </div>;
+  const { settings, isPending: isSettingsLoading } = usePluginSettings();
+
+  if (isSettingsLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">
+          <div className="mb-2">Loading...</div>
+          <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+        </div>
+      </div>
+    );
   }
 
   if (!settings.apiKey || !settings.address) {
-    navigate("/notconfigured");
-    return;
+    return <Navigate to="/notconfigured" replace />;
   }
 
   return (

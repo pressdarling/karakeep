@@ -63,6 +63,10 @@ export default function OptionsPage() {
     navigate("/notconfigured");
   };
 
+  const handleAutoSaveToggle = () => {
+    setSettings((s) => ({ ...s, autoSave: !s.autoSave }));
+  };
+
   return (
     <div className="flex flex-col space-y-2">
       <Logo />
@@ -136,7 +140,23 @@ export default function OptionsPage() {
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={onLogout}>Logout</Button>
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="font-medium">Auto-save bookmarks</span>
+          <p className="text-sm text-gray-600">
+            Automatically save the current tab when opening the extension
+          </p>
+        </div>
+        <Switch
+          checked={settings.autoSave}
+          onCheckedChange={(checked) =>
+            setSettings((s) => ({ ...s, autoSave: checked }))
+          }
+        />
+      </div>
+       </div>
+       <Button onClick={onLogout}>Logout</Button>
+     </div>
     </div>
   );
 }

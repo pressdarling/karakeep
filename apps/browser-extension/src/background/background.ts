@@ -133,10 +133,6 @@ async function handleContextMenuClick(
   }
 }
 
-/**
- * Add a link to karakeep based on the provided information.
- * @param options An object containing information about the link to add.
- */
 function addLinkToKarakeep({
   selectionText,
   srcUrl,

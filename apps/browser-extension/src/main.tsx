@@ -6,6 +6,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 
 import BookmarkDeletedPage from "./BookmarkDeletedPage.tsx";
 import BookmarkSavedPage from "./BookmarkSavedPage.tsx";
+import BulkSavePage from "./BulkSavePage.tsx";
 import CustomHeadersPage from "./CustomHeadersPage.tsx";
 import Layout from "./Layout.tsx";
 import NotConfiguredPage from "./NotConfiguredPage.tsx";
@@ -22,6 +23,7 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<SavePage />} />
+              <Route path="/bulk-save" element={<BulkSavePage />} />
               <Route
                 path="/bookmark/:bookmarkId"
                 element={<BookmarkSavedPage />}
