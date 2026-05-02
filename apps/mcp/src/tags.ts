@@ -1,69 +1,96 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
 import { z } from "zod";
 
-import { karakeepClient, mcpServer } from "./shared";
+import { KarakeepMcpContext } from "./shared";
 import { toMcpToolError } from "./utils";
 
-mcpServer.tool(
-  "attach-tag-to-bookmark",
-  `Attach a tag to a bookmark.`,
-  {
-    bookmarkId: z.string().describe(`The bookmarkId to attach the tag to.`),
-    tagsToAttach: z.array(z.string()).describe(`The tag names to attach.`),
-  },
-  async ({ bookmarkId, tagsToAttach }): Promise<CallToolResult> => {
-    const res = await karakeepClient.POST(`/bookmarks/{bookmarkId}/tags`, {
-      params: {
-        path: {
-          bookmarkId,
-        },
+export function registerTagTools({
+  karakeepClient,
+  mcpServer,
+}: KarakeepMcpContext) {
+  mcpServer.registerTool(
+    "attach-tag-to-bookmark",
+    {
+      title: "Attach tag to bookmark",
+      description:
+        "Use this when the user asks to attach one or more tags to a Karakeep bookmark.",
+      inputSchema: {
+        bookmarkId: z.string().describe(`The bookmarkId to attach the tag to.`),
+        tagsToAttach: z.array(z.string()).describe(`The tag names to attach.`),
       },
-      body: {
-        tags: tagsToAttach.map((tag: string) => ({ tagName: tag })),
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
       },
-    });
-    if (res.error) {
-      return toMcpToolError(res.error);
-    }
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Tags ${JSON.stringify(tagsToAttach)} attached to bookmark ${bookmarkId}`,
+    },
+    async ({ bookmarkId, tagsToAttach }): Promise<CallToolResult> => {
+      const res = await karakeepClient.POST(`/bookmarks/{bookmarkId}/tags`, {
+        params: {
+          path: {
+            bookmarkId,
+          },
         },
-      ],
-    };
-  },
-);
+        body: {
+          tags: tagsToAttach.map((tag: string) => ({ tagName: tag })),
+        },
+      });
+      if (res.error) {
+        return toMcpToolError(res.error);
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Tags ${JSON.stringify(tagsToAttach)} attached to bookmark ${bookmarkId}`,
+          },
+        ],
+      };
+    },
+  );
 
-mcpServer.tool(
-  "detach-tag-from-bookmark",
-  `Detach a tag from a bookmark.`,
-  {
-    bookmarkId: z.string().describe(`The bookmarkId to detach the tag from.`),
-    tagsToDetach: z.array(z.string()).describe(`The tag names to detach.`),
-  },
-  async ({ bookmarkId, tagsToDetach }): Promise<CallToolResult> => {
-    const res = await karakeepClient.DELETE(`/bookmarks/{bookmarkId}/tags`, {
-      params: {
-        path: {
-          bookmarkId,
-        },
+  mcpServer.registerTool(
+    "detach-tag-from-bookmark",
+    {
+      title: "Detach tag from bookmark",
+      description:
+        "Use this when the user asks to detach one or more tags from a Karakeep bookmark.",
+      inputSchema: {
+        bookmarkId: z
+          .string()
+          .describe(`The bookmarkId to detach the tag from.`),
+        tagsToDetach: z.array(z.string()).describe(`The tag names to detach.`),
       },
-      body: {
-        tags: tagsToDetach.map((tag: string) => ({ tagName: tag })),
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
       },
-    });
-    if (res.error) {
-      return toMcpToolError(res.error);
-    }
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Tags ${JSON.stringify(tagsToDetach)} detached from bookmark ${bookmarkId}`,
+    },
+    async ({ bookmarkId, tagsToDetach }): Promise<CallToolResult> => {
+      const res = await karakeepClient.DELETE(`/bookmarks/{bookmarkId}/tags`, {
+        params: {
+          path: {
+            bookmarkId,
+          },
         },
-      ],
-    };
-  },
-);
+        body: {
+          tags: tagsToDetach.map((tag) => ({ tagName: tag })),
+        },
+      });
+      if (res.error) {
+        return toMcpToolError(res.error);
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Tags ${JSON.stringify(tagsToDetach)} detached from bookmark ${bookmarkId}`,
+          },
+        ],
+      };
+    },
+  );
+}

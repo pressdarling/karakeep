@@ -11,7 +11,8 @@
     "mcp"
   ],
   "bin": {
-    "karakeep-mcp": "dist/index.js"
+    "karakeep-mcp": "dist/index.js",
+    "karakeep-mcp-http": "dist/http.js"
   },
   "devDependencies": {
     "@karakeep/tsconfig": "workspace:^0.1.0",
@@ -23,8 +24,9 @@
     "vite-tsconfig-paths": "^6.1.1"
   },
   "scripts": {
-    "build": "vite build && shx chmod +x dist/index.js",
+    "build": "vite build && shx chmod +x dist/index.js dist/http.js",
     "run": "tsx src/index.ts",
+    "run:http": "tsx src/http.ts",
     "lint": "oxlint --ignore-path=../../.gitignore .",
     "lint:fix": "oxlint --ignore-path=../../.gitignore . --fix",
     "format": "oxfmt --ignore-path=../../.gitignore --ignore-path=./.gitignore --check .",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "@karakeep/sdk": "workspace:*",
+    "@modelcontextprotocol/ext-apps": "^1.7.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "turndown": "^7.2.0",
     "zod": "^4.0.0"

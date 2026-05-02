@@ -6,7 +6,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   build: {
     rollupOptions: {
-      input: "src/index.ts",
+      input: {
+        index: "src/index.ts",
+        http: "src/http.ts",
+      },
       output: {
         dir: "dist",
       },
