@@ -144,4 +144,10 @@ httpServer.listen(port, () => {
   console.log(
     `Karakeep MCP server listening on http://localhost:${port}${mcpPath}`,
   );
+  if (!process.env.KARAKEEP_MCP_ALLOWED_ORIGINS) {
+    console.warn(
+      "[karakeep-mcp] CORS is unrestricted (Access-Control-Allow-Origin: *). " +
+        "Set KARAKEEP_MCP_ALLOWED_ORIGINS to restrict cross-origin access in production.",
+    );
+  }
 });
