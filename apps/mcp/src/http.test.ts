@@ -16,6 +16,11 @@ describe("resolveAllowOrigin", () => {
       expect(resolveAllowOrigin("https://example.com", "   ")).toBe("*");
     });
 
+    it("returns empty string when env var has only whitespace entries (fail-closed)", () => {
+      // All entries strip to empty → no valid origins → block all
+      expect(resolveAllowOrigin("https://example.com", "  ,  ,  ")).toBe("");
+    });
+
     it("returns '*' when requestOrigin is undefined", () => {
       expect(resolveAllowOrigin(undefined, undefined)).toBe("*");
     });

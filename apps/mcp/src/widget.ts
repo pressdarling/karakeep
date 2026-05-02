@@ -356,6 +356,8 @@ export function buildWidgetHtml(targetOrigin: string): string {
           if (window.openai?.openExternal) {
             await window.openai.openExternal({ href });
           } else if (/^https?:\/\//i.test(href)) {
+            // Allow both https: and http: so bookmarks saved with http:// URLs
+            // still open. Any other scheme (e.g. javascript:) is silently ignored.
             window.open(href, "_blank", "noopener");
           }
           return;

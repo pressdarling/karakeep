@@ -32,13 +32,18 @@ export function resolveAllowOrigin(
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
+  // If the env var was set but contained only whitespace/empty entries, fail
+  // closed (no origin allowed) rather than falling back to "*".
+  if (allowed.length === 0) {
+    return "";
+  }
   if (requestOrigin && allowed.includes(requestOrigin)) {
     return requestOrigin;
   }
   // Return the first allowed origin so clients receive a deterministic value
   // even when their origin is not in the list (the browser will still block
   // the request, but we never echo arbitrary origins back).
-  return allowed[0] ?? "*";
+  return allowed[0];
 }
 
 function corsHeaders(requestOrigin?: string) {
