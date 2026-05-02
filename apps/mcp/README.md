@@ -30,6 +30,15 @@ pnpm --filter @karakeep/mcp run run:http
 By default, the HTTP server listens on `http://localhost:8787/mcp`. Override the
 port with `PORT` or `KARAKEEP_MCP_PORT`.
 
+### Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` / `KARAKEEP_MCP_PORT` | `8787` | TCP port for the HTTP server |
+| `KARAKEEP_MCP_PATH` | `/mcp` | URL path for the MCP endpoint |
+| `KARAKEEP_MCP_ALLOWED_ORIGINS` | *(unset — all origins allowed)* | Comma-separated list of trusted origins for CORS (e.g. `https://chatgpt.com`). When unset, all origins are accepted (`*`), which is suitable for local development but should be restricted in production. |
+| `KARAKEEP_CHATGPT_APP_DOMAIN` | *(unset)* | The domain of the ChatGPT App embedding the widget (e.g. `https://chatgpt.com`). When set, the widget's `postMessage` calls are scoped to this origin instead of `*`. |
+
 For local ChatGPT testing, expose the local server over HTTPS and use the `/mcp`
 path when creating the app in ChatGPT Developer Mode:
 

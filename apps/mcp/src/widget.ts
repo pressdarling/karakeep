@@ -12,7 +12,8 @@ import { toBookmarkSummary, toMcpToolError } from "./utils";
 
 const TEMPLATE_URI = "ui://widget/karakeep-bookmark-search-v1.html";
 
-const BOOKMARK_SEARCH_WIDGET_HTML = String.raw`<!DOCTYPE html>
+export function buildWidgetHtml(targetOrigin: string): string {
+  return String.raw`<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -193,15 +194,17 @@ const BOOKMARK_SEARCH_WIDGET_HTML = String.raw`<!DOCTYPE html>
       let rpcId = 0;
       const pendingRequests = new Map();
 
+      const TARGET_ORIGIN = ${JSON.stringify(targetOrigin)};
+
       const rpcNotify = (method, params) => {
-        window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+        window.parent.postMessage({ jsonrpc: "2.0", method, params }, TARGET_ORIGIN);
       };
 
       const rpcRequest = (method, params) =>
         new Promise((resolve, reject) => {
           const id = ++rpcId;
           pendingRequests.set(id, { resolve, reject });
-          window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+          window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, TARGET_ORIGIN);
         });
 
       const escapeText = (value) =>
@@ -309,7 +312,7 @@ const BOOKMARK_SEARCH_WIDGET_HTML = String.raw`<!DOCTYPE html>
       const bridgeReady = rpcRequest("ui/initialize", {
         appInfo: { name: "karakeep-bookmark-search", version: "0.1.0" },
         appCapabilities: {},
-        protocolVersion: "2026-01-26",
+        protocolVersion: "2024-11-05",
       })
         .then(() => rpcNotify("ui/notifications/initialized", {}))
         .catch((error) => {
@@ -352,7 +355,7 @@ const BOOKMARK_SEARCH_WIDGET_HTML = String.raw`<!DOCTYPE html>
           if (!href) return;
           if (window.openai?.openExternal) {
             await window.openai.openExternal({ href });
-          } else {
+          } else if (/^https?:\/\//i.test(href)) {
             window.open(href, "_blank", "noopener");
           }
           return;
@@ -374,9 +377,11 @@ const BOOKMARK_SEARCH_WIDGET_HTML = String.raw`<!DOCTYPE html>
     </script>
   </body>
 </html>`;
+}
 
 export function registerKarakeepWidgetTools(context: KarakeepMcpContext) {
   const domain = process.env.KARAKEEP_CHATGPT_APP_DOMAIN;
+  const targetOrigin = domain ?? "*";
   const uiMeta = {
     prefersBorder: true,
     csp: {
@@ -398,7 +403,7 @@ export function registerKarakeepWidgetTools(context: KarakeepMcpContext) {
         {
           uri: TEMPLATE_URI,
           mimeType: RESOURCE_MIME_TYPE,
-          text: BOOKMARK_SEARCH_WIDGET_HTML,
+          text: buildWidgetHtml(targetOrigin),
           _meta: {
             ui: uiMeta,
             "openai/widgetDescription":
